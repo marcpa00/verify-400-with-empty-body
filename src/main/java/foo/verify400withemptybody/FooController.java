@@ -16,13 +16,12 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/foos")
 public class FooController {
 
-  private static final Map<UUID, FooDTO> foos = new HashMap<>();
+  private static final Map<String, FooDTO> foos = new HashMap<>();
 
   @ExceptionHandler(value = { ServerWebInputException.class,
                               NullPointerException.class,
@@ -39,14 +38,13 @@ public class FooController {
     FooDTO result = new FooDTO();
     result.setFooId(dto.getFooId());
     result.setUserId(dto.getUserId());
-    UUID uuid = UUID.randomUUID() ;
-    foos.put(uuid, result);
-    return ResponseEntity.created(URI.create("/foos/" + uuid)).build();
+    foos.put(dto.getUserId(), result);
+    return ResponseEntity.created(URI.create("/foos/" + dto.getUserId())).build();
   }
 
-  @GetMapping("/{uuid}")
-  public ResponseEntity<FooDTO> getFoo(@PathVariable String uuid) {
-    Optional<FooDTO> optionalFooDTO = Optional.ofNullable(foos.get(UUID.fromString(uuid)));
+  @GetMapping("/{userId}")
+  public ResponseEntity<FooDTO> getFoo(@PathVariable String userId) {
+    Optional<FooDTO> optionalFooDTO = Optional.ofNullable(foos.get(userId));
 
     if (optionalFooDTO.isPresent()) {
       return ResponseEntity.ok(optionalFooDTO.get());
