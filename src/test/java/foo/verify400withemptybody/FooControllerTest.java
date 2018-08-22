@@ -31,38 +31,34 @@ public class FooControllerTest {
 
   @Test
   public void createTest() {
-    FooDTO foo = new FooDTO();
-    foo.setFooId("foo dto from unit test");
-    foo.setUserId("user-test-00");
+    String foo = "foo string from unit test";
     EntityExchangeResult entityExchangeResult = webTestClient.post()
         .uri(FOO_URL)
-        .body(Mono.just(foo), FooDTO.class)
+        .body(Mono.just(foo), String.class)
         .exchange()
         .expectStatus()
         .isCreated()
         .expectBody()
         .isEmpty();
 
-    EntityExchangeResult<FooDTO> fooDTOEntityExchangeResult = webTestClient.get()
+    EntityExchangeResult<String> fooEntityExchangeResult = webTestClient.get()
         .uri(entityExchangeResult.getResponseHeaders().getLocation())
         .exchange()
         .expectStatus()
         .isOk()
-        .expectBody(FooDTO.class)
+        .expectBody(String.class)
         .returnResult();
 
-    FooDTO fooDTOFromResponse = fooDTOEntityExchangeResult.getResponseBody();
+    String fooFromResponse = fooEntityExchangeResult.getResponseBody();
 
-    assert foo.getFooId().equals(fooDTOFromResponse.getFooId());
-    assert foo.getUserId().equals(fooDTOFromResponse.getUserId());
-
+    assert foo.equals(fooFromResponse);
   }
 
   @Test
   public void badRequestTest() {
     webTestClient.post()
         .uri(FOO_URL )
-        .body(Mono.empty(), FooDTO.class)
+        .body(Mono.empty(), String.class)
         .exchange()
         .expectStatus()
         .isBadRequest()
