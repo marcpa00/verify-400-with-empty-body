@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
@@ -33,14 +34,28 @@ public class FooControllerTest {
     FooDTO foo = new FooDTO();
     foo.setFooId("foo dto from unit test");
     foo.setUserId("user-test-00");
-    webTestClient.post()
+    EntityExchangeResult entityExchangeResult = webTestClient.post()
         .uri(FOO_URL)
         .body(Mono.just(foo), FooDTO.class)
         .exchange()
         .expectStatus()
         .isCreated()
+        .expectBody()
+        .isEmpty();
+
+    EntityExchangeResult<FooDTO> fooDTOEntityExchangeResult = webTestClient.get()
+        .uri(entityExchangeResult.getResponseHeaders().getLocation())
+        .exchange()
+        .expectStatus()
+        .isOk()
         .expectBody(FooDTO.class)
         .returnResult();
+
+    FooDTO fooDTOFromResponse = fooDTOEntityExchangeResult.getResponseBody();
+
+    assert foo.getFooId().equals(fooDTOFromResponse.getFooId());
+    assert foo.getUserId().equals(fooDTOFromResponse.getUserId());
+
   }
 
   @Test

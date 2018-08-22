@@ -44,7 +44,7 @@ public class FooController {
     return ResponseEntity.created(URI.create("/foos/" + uuid)).build();
   }
 
-  @GetMapping("/foos/{uuid}")
+  @GetMapping("/{uuid}")
   public ResponseEntity<FooDTO> getFoo(@PathVariable String uuid) {
     Optional<FooDTO> optionalFooDTO = Optional.ofNullable(foos.get(UUID.fromString(uuid)));
 
