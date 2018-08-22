@@ -13,15 +13,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ServerWebInputException;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/foos")
 public class FooController {
 
-  private static final Map<String, FooDTO> foos = new HashMap<>();
+  private static String foos;
 
   @ExceptionHandler(value = { ServerWebInputException.class,
                               NullPointerException.class,
@@ -34,24 +31,13 @@ public class FooController {
   }
 
   @PostMapping
-  public ResponseEntity<FooDTO> createFoo(@RequestBody FooDTO dto) {
-    FooDTO result = new FooDTO();
-    result.setFooId(dto.getFooId());
-    result.setUserId(dto.getUserId());
-    foos.put(dto.getUserId(), result);
-    return ResponseEntity.created(URI.create("/foos/" + dto.getUserId())).build();
+  public ResponseEntity<String> createFoo(@RequestBody String dto) {
+    foos = dto;
+    return ResponseEntity.created(URI.create("/foos/0")).build();
   }
 
-  @GetMapping("/{userId}")
-  public ResponseEntity<FooDTO> getFoo(@PathVariable String userId) {
-    Optional<FooDTO> optionalFooDTO = Optional.ofNullable(foos.get(userId));
-
-    if (optionalFooDTO.isPresent()) {
-      return ResponseEntity.ok(optionalFooDTO.get());
-    }
-    else {
-      return ResponseEntity.notFound().build();
-    }
+  @GetMapping("/{id}")
+  public ResponseEntity<String> getFoo(@PathVariable String id) {
+    return ResponseEntity.ok(foos);
   }
-
 }
