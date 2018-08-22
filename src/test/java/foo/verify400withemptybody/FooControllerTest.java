@@ -30,7 +30,9 @@ public class FooControllerTest {
 
   @Test
   public void createTest() {
-    FooDTO foo = new FooDTO().setFooId("foo dto from unit test").setUserId("user-test-00");
+    FooDTO foo = new FooDTO();
+    foo.setFooId("foo dto from unit test");
+    foo.setUserId("user-test-00");
     webTestClient.post()
         .uri(FOO_URL)
         .body(Mono.just(foo), FooDTO.class)

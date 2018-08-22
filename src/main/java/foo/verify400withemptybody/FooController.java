@@ -1,6 +1,5 @@
 package foo.verify400withemptybody;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,7 +19,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/foos")
 public class FooController {
 
@@ -38,7 +36,9 @@ public class FooController {
 
   @PostMapping
   public ResponseEntity<FooDTO> createFoo(@RequestBody FooDTO dto) {
-    FooDTO result = new FooDTO().setFooId(dto.getFooId()).setUserId(dto.getUserId());
+    FooDTO result = new FooDTO();
+    result.setFooId(dto.getFooId());
+    result.setUserId(dto.getUserId());
     UUID uuid = UUID.randomUUID() ;
     foos.put(uuid, result);
     return ResponseEntity.created(URI.create("/foos/" + uuid)).build();
